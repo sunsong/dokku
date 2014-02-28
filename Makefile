@@ -2,7 +2,7 @@ DOKKU_VERSION = master
 
 SSHCOMMAND_URL ?= https://raw.github.com/progrium/sshcommand/master/sshcommand
 PLUGINHOOK_URL ?= https://s3.amazonaws.com/progrium-pluginhook/pluginhook_0.1.0_amd64.deb
-STACK_URL ?= https://github.com/progrium/buildstep.git
+STACK_URL ?= https://github.com/sunsong/buildstep.git
 DOKKU_ROOT ?= /home/dokku
 
 .PHONY: all install copyfiles version plugins dependencies sshcommand pluginhook docker aufs stack count
