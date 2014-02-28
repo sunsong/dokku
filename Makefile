@@ -28,7 +28,7 @@ version:
 plugins: pluginhook docker
 	dokku plugins-install
 
-dependencies: sshcommand pluginhook docker stack
+dependencies: sshcommand pluginhook docker create_base_image stack
 
 sshcommand:
 	wget -qO /usr/local/bin/sshcommand ${SSHCOMMAND_URL}
@@ -54,6 +54,11 @@ endif
 
 aufs:
 	lsmod | grep aufs || modprobe aufs || apt-get install -y linux-image-extra-`uname -r`
+
+create_base_image:
+	mkdir baseimage && cd baseimage
+	debootstrap saucy saucy
+	tar -C saucy -c . | docker import - ubuntu:saucy
 
 stack:
 	@docker images | grep progrium/buildstep || (git clone ${STACK_URL} /tmp/buildstep && docker build -t progrium/buildstep /tmp/buildstep && rm -rf /tmp/buildstep)
