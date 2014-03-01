@@ -2,6 +2,7 @@ DOKKU_VERSION = master
 
 SSHCOMMAND_URL ?= https://raw.github.com/progrium/sshcommand/master/sshcommand
 PLUGINHOOK_URL ?= https://s3.amazonaws.com/progrium-pluginhook/pluginhook_0.1.0_amd64.deb
+SAUCY_REPOSITORY_URL = ?= http://cn.archive.ubuntu.com/ubuntu
 STACK_URL ?= https://github.com/sunsong/buildstep.git
 DOKKU_ROOT ?= /home/dokku
 
@@ -56,7 +57,7 @@ aufs:
 	lsmod | grep aufs || modprobe aufs || apt-get install -y linux-image-extra-`uname -r`
 
 create_base_image:
-	debootstrap saucy saucy
+	debootstrap saucy saucy ${SAUCY_REPOSITORY_URL}
 	tar -C saucy -c . | docker import - ubuntu:saucy
 
 stack:
