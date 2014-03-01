@@ -56,7 +56,6 @@ aufs:
 	lsmod | grep aufs || modprobe aufs || apt-get install -y linux-image-extra-`uname -r`
 
 create_base_image:
-	mkdir baseimage && cd baseimage
 	debootstrap saucy saucy
 	tar -C saucy -c . | docker import - ubuntu:saucy
 
