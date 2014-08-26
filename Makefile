@@ -2,7 +2,7 @@ DOKKU_VERSION = master
 
 SSHCOMMAND_URL ?= https://raw.github.com/progrium/sshcommand/master/sshcommand
 PLUGINHOOK_URL ?= https://s3.amazonaws.com/progrium-pluginhook/pluginhook_0.1.0_amd64.deb
-SAUCY_REPOSITORY_URL ?= http://cn.archive.ubuntu.com/ubuntu
+TRUSTY_REPOSITORY_URL ?= http://ftp.sjtu.edu.cn/ubuntu/
 STACK_URL ?= https://github.com/sunsong/buildstep.git
 DOKKU_ROOT ?= /home/dokku
 
@@ -57,11 +57,11 @@ aufs:
 	lsmod | grep aufs || modprobe aufs || apt-get install -y linux-image-extra-`uname -r`
 
 create_base_image:
-	debootstrap saucy saucy ${SAUCY_REPOSITORY_URL}
-	tar -C saucy -c . | docker import - ubuntu:saucy
+	debootstrap trusty trusty ${TRUSTY_REPOSITORY_URL}
+	tar -C trusty -c . | docker import - ubuntutrusty
 
 stack:
-	@docker images | grep progrium/buildstep || (git clone ${STACK_URL} /tmp/buildstep && docker build -t progrium/buildstep /tmp/buildstep && rm -rf /tmp/buildstep)
+	@docker images | grep progrium/buildstep || (git clone -b qingcloud ${STACK_URL} /tmp/buildstep && docker build -t progrium/buildstep /tmp/buildstep && rm -rf /tmp/buildstep)
 
 count:
 	@echo "Core lines:"
