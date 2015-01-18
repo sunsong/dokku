@@ -2,9 +2,10 @@ DOKKU_VERSION = master
 
 SSHCOMMAND_URL ?= https://raw.github.com/progrium/sshcommand/master/sshcommand
 PLUGINHOOK_URL ?= https://s3.amazonaws.com/progrium-pluginhook/pluginhook_0.1.0_amd64.deb
-STACK_URL ?= https://github.com/progrium/buildstep.git
+STACK_URL ?= https://github.com/sunsong/buildstep.git
 PREBUILT_STACK_URL ?= https://github.com/progrium/buildstep/releases/download/2014-12-16/2014-12-16_42bd9f4aab.tar.gz
 PLUGINS_PATH ?= /var/lib/dokku/plugins
+TRUSTY_REPOSITORY_URL ?= http://cn.archive.ubuntu.com/ubuntu/
 
 # If the first argument is "vagrant-dokku"...
 ifeq (vagrant-dokku,$(firstword $(MAKECMDGOALS)))
@@ -61,10 +62,16 @@ plugin-dependencies: pluginhook
 plugins: pluginhook docker
 	dokku plugins-install
 
-dependencies: sshcommand pluginhook docker stack help2man
+dependencies: sshcommand pluginhook docker debootstrap create_base_image stack help2man
 
 help2man:
 	apt-get install -qq -y help2man
+
+debootstrap:
+	apt-get install debootstrap
+
+create_base_image:
+	docker images | grep -P "ubuntu-debootstrap\s+14.04" || (debootstrap trusty trusty ${TRUSTY_REPOSITORY_URL} && tar -C trusty -c . | docker import - ubuntu-debootstrap:14.04)
 
 sshcommand:
 	wget -qO /usr/local/bin/sshcommand ${SSHCOMMAND_URL}
@@ -96,11 +103,7 @@ endif
 
 stack:
 	@echo "Start building buildstep"
-ifdef BUILD_STACK
 	@docker images | grep progrium/buildstep || (git clone ${STACK_URL} /tmp/buildstep && docker build -t progrium/buildstep /tmp/buildstep && rm -rf /tmp/buildstep)
-else
-	@docker images | grep progrium/buildstep || curl --silent -L ${PREBUILT_STACK_URL} | gunzip -cd | docker import - progrium/buildstep
-endif
 
 count:
 	@echo "Core lines:"
