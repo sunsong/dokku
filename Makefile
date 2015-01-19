@@ -6,6 +6,7 @@ STACK_URL ?= https://github.com/sunsong/buildstep.git
 PREBUILT_STACK_URL ?= https://github.com/progrium/buildstep/releases/download/2014-12-16/2014-12-16_42bd9f4aab.tar.gz
 PLUGINS_PATH ?= /var/lib/dokku/plugins
 TRUSTY_REPOSITORY_URL ?= http://cn.archive.ubuntu.com/ubuntu/
+CEDARISH_URL ?= https://github.com/sunsong/cedarish.git
 
 # If the first argument is "vagrant-dokku"...
 ifeq (vagrant-dokku,$(firstword $(MAKECMDGOALS)))
@@ -72,6 +73,7 @@ debootstrap:
 
 create_base_image:
 	docker images | grep -P "ubuntu-debootstrap\s+14.04" || (debootstrap trusty trusty ${TRUSTY_REPOSITORY_URL} && tar -C trusty -c . | docker import - ubuntu-debootstrap:14.04)
+	docker images | grep -P "progrium/cedarish\s+cedar14" || (git clone ${CEDARISH_URL} /tmp/cedarish && cd /tmp/cedarish && make && cat release/darish-cedar14_v2.tar | docker import - progrium/cedarish:cedar14 && rm -rf /tmp/cedarish)
 
 sshcommand:
 	wget -qO /usr/local/bin/sshcommand ${SSHCOMMAND_URL}
